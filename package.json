@@ -1,0 +1,16 @@
+{
+  "name": "garfield-en-espanol-bot",
+  "version": "1.0.0",
+  "description": "Post today's Garfield en Español to Slack",
+  "main": "garfield.js",
+  "dependencies": {
+    "node-fetch": "^2.6.0",
+    "node-html-parser": "^1.1.16"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cody Crow",
+  "license": "MIT"
+}
