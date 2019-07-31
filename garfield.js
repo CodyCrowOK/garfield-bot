@@ -5,43 +5,68 @@ const Parser = require('node-html-parser');
 const {slackToken, channel} = require('./credentials.js');
 
 const today = new Date();
-const dateString = today.getFullYear() + '/' + today.getMonth() + '/' + today.getDate();
+const dateString = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
 
 const url = 'https://www.gocomics.com/garfieldespanol%20/' + dateString;
 
 fetch(url)
   .then(response => response.text())
   .then(document => {
+    const imgUrl = getImageUrlFromRawHtmlDocument(document);
+    const slackImageBlock = buildSlackImageBlockFromImageUrl(imgUrl);
+    const postMessageBody = buildPostMessageArgumentsObjectFromImageBlock(slackImageBlock);
+    const arguments = encodeGetParams(postMessageBody);
+
+    postMessageToSlack(arguments);
+  });
+
+function getImageUrlFromRawHtmlDocument(document) {
+  try {
     const root = Parser.parse(document);
     const imgWrapper = root.querySelector('.item-comic-image');
     const img = imgWrapper.querySelector('img');
-    const imgUrl = img.attributes.src;
 
-    const slackImageBlock = {
-      "type": "image",
-      "image_url": imgUrl,
-      "alt_text": 'Debajo del puente en Guadalajara había un conejo debajo del agua.'
-    };
+    return img.attributes.src;
+  } catch (e) {
+    return 'https://vignette.wikia.nocookie.net/garfield/images/a/a6/MistakesWillHappenTitleCard.png/revision/latest/scale-to-width-down/699';
+  }
+}
 
-    const postMessageBody = {
-      token: slackToken,
-      channel,
-      text: ':cool:',
-      blocks: JSON.stringify([slackImageBlock]),
-      as_user: false,
-      username: 'Garfield Bot',
-      icon_emoji: ':garfield:'
-    };
+function buildSlackImageBlockFromImageUrl(imgUrl) {
+  return {
+    "type": "image",
+    "image_url": imgUrl,
+    "alt_text": 'Debajo del puente en Guadalajara había un conejo debajo del agua.'
+  };
+}
 
-    const encodeGetParams = p => Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
-    const arguments = encodeGetParams(postMessageBody);
+function buildPostMessageArgumentsObjectFromImageBlock(slackImageBlock) {
+  return {
+    token: slackToken,
+    channel,
+    text: ':cool:',
+    blocks: JSON.stringify([slackImageBlock]),
+    as_user: false,
+    username: 'Garfield Bot',
+    icon_emoji: ':garfield:'
+  };
+}
 
-    fetch('https://slack.com/api/chat.postMessage?' + arguments, {
+function encodeGetParams (argumentsAsObject) {
+  return Object.entries(argumentsAsObject)
+    .map(
+      kv => kv.map(encodeURIComponent)
+        .join("=")
+    )
+    .join("&");
+}
+
+function postMessageToSlack(arguments) {
+  fetch('https://slack.com/api/chat.postMessage?' + arguments, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(postMessageBody)
+      }
     }).then(response => response.json())
     .then(response => console.log(response));
-  });
+}
