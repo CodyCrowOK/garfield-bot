@@ -2,7 +2,10 @@
 
 const fetch = require('node-fetch');
 const Parser = require('node-html-parser');
-const {slackToken, channel} = require('./credentials.js');
+
+const {slackToken, garfieldChannel} = require('./credentials.js');
+const encodeGetParams = require('./utils/encode-get-params.js');
+const postMessageToSlack = require('./utils/post-message-to-slack.js');
 
 const today = new Date();
 const dateString = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
@@ -43,30 +46,11 @@ function buildSlackImageBlockFromImageUrl(imgUrl) {
 function buildPostMessageArgumentsObjectFromImageBlock(slackImageBlock) {
   return {
     token: slackToken,
-    channel,
+    channel: garfieldChannel,
     text: ':cool:',
     blocks: JSON.stringify([slackImageBlock]),
     as_user: false,
     username: 'Garfield Bot',
     icon_emoji: ':garfield:'
   };
-}
-
-function encodeGetParams (argumentsAsObject) {
-  return Object.entries(argumentsAsObject)
-    .map(
-      kv => kv.map(encodeURIComponent)
-        .join("=")
-    )
-    .join("&");
-}
-
-function postMessageToSlack(arguments) {
-  fetch('https://slack.com/api/chat.postMessage?' + arguments, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }).then(response => response.json())
-    .then(response => console.log(response));
 }
