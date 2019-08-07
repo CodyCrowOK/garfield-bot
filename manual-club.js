@@ -13,7 +13,8 @@ function main() {
     'Duncan': 'ULULNTY8L',
     'James': 'UK7G74UF2',
     'Jason': 'U8MMWTNNR',
-    'Marty': 'UFPKJR01Z'
+    'Marty': 'UFPKJR01Z',
+    'Kensen': 'U0BSLQA5R'
   };
 
   const {userId} = getRandomPerson(clubMembers);
