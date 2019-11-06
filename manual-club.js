@@ -11,10 +11,10 @@ function main() {
     'Cody': 'U8SF3NRR7',
     'Taylor': 'UB9EHTN8Y',
     'Duncan': 'ULULNTY8L',
-    'James': 'UK7G74UF2',
     'Jason': 'U8MMWTNNR',
     'Marty': 'UFPKJR01Z',
-    'Kensen': 'U0BSLQA5R'
+    'Phillip': 'UPNT7H856',
+    'Austin': 'UP5SMUS48',
   };
 
   const {userId} = getRandomPerson(clubMembers);
